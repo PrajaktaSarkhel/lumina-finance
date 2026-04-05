@@ -170,7 +170,7 @@ function App() {
 
         <div className="mt-auto p-4 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-sm">P</div>
+            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-sm">U</div>
             <div>
               <p className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400">{role}</p>
               <p className="text-xs font-bold dark:text-white">User</p>
