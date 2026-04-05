@@ -13,6 +13,7 @@ import LogoImage from './assets/logo.png';
 function App() {
   const { transactions, addTransaction, role, setRole, darkMode, toggleDarkMode, deleteTransaction } = useStore();
   const [activeTab, setActiveTab] = useState('Overview');
+  const [searchQuery, setSearchQuery] = useState('');
   
   // State for the Add Transaction Form
   const [formData, setFormData] = useState({ amount: '', category: '', type: 'expense' });
@@ -43,6 +44,17 @@ function App() {
     return { topCategory: top, totalExp, income };
   }, [transactions]);
 
+  const filteredTransactions = useMemo(() => {
+    if (!searchQuery.trim()) return transactions;
+    const q = searchQuery.toLowerCase();
+    return transactions.filter(t =>
+      t.category.toLowerCase().includes(q) ||
+      t.type.toLowerCase().includes(q) ||
+      t.amount.toString().includes(q) ||
+      (t.note && t.note.toLowerCase().includes(q))
+    );
+  }, [transactions, searchQuery]);
+
   const handleAddSubmit = (e) => {
     e.preventDefault();
     if (!formData.amount || !formData.category) return;
@@ -57,7 +69,7 @@ function App() {
 
   // --- SUB-PAGE COMPONENTS ---
 
-  const TransactionsPage = () => (
+  const TransactionsPage = ({ data }) => (   // ← add { data } here
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
       <h3 className="text-xl font-bold dark:text-white">Transaction History</h3>
       <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm">
@@ -71,7 +83,7 @@ function App() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-            {transactions.map(t => (
+            {data.map(t => (   // ← transactions.map becomes data.map
               <tr key={t.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors">
                 <td className="px-6 py-4 font-medium dark:text-white flex items-center gap-3">
                    <div className={`w-2 h-2 rounded-full ${t.type === 'income' ? 'bg-green-500' : 'bg-red-500'}`}></div>
@@ -192,8 +204,19 @@ function App() {
             <h2 className="text-3xl font-black italic text-gray-950 dark:text-white">Welcome back!</h2>
             <p className="text-gray-400 text-sm">Dashboard / {activeTab}</p>
           </div>
-          <div className="flex items-center gap-4">
-            {/* Theme Toggle - Logic fixed */}
+          <div className="flex items-center gap-3">
+            {/* Search Bar */}
+            <div className="relative">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search transactions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm focus:outline-none focus:border-blue-500 dark:text-white w-56 transition-all"
+              />
+            </div>
+            {/* Theme Toggle */}
             <button onClick={toggleDarkMode} className="p-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm hover:border-blue-500 transition-all">
               {darkMode ? <Sun size={18} className="text-yellow-400"/> : <Moon size={18} className="text-blue-600"/>}
             </button>
@@ -232,7 +255,7 @@ function App() {
           </div>
         )}
 
-        {activeTab === 'Transactions' && <TransactionsPage />}
+        {activeTab === 'Transactions' && <TransactionsPage data={filteredTransactions} />}
         {activeTab === 'Analytics' && <AnalyticsPage />}
         {activeTab === 'Settings' && <SettingsPage />}
       </main>

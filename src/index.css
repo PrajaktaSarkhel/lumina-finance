@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* ✅ THIS IS THE FIX — tells Tailwind v4 to use .dark class for dark: variants */
+@variant dark (&:where(.dark, .dark *));
+
 @layer base {
   body {
     @apply antialiased overflow-hidden;
@@ -14,7 +17,6 @@
   @apply bg-gray-200 dark:bg-slate-800 rounded-full;
 }
 
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
