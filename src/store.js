@@ -1,13 +1,24 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-export const useStore = create((set) => ({
-  role: 'admin', // 'admin' or 'viewer'
-  setRole: (role) => set({ role }),
-  transactions: [
-    { id: 1, date: '2023-10-01', amount: 1200, category: 'Housing', type: 'expense' },
-    { id: 2, date: '2023-10-02', amount: 5000, category: 'Salary', type: 'income' },
-    { id: 3, date: '2023-10-05', amount: 150, category: 'Food', type: 'expense' },
-    { id: 4, date: '2023-10-07', amount: 80, category: 'Entertainment', type: 'expense' },
-  ],
-  addTransaction: (tx) => set((state) => ({ transactions: [tx, ...state.transactions] })),
-}));
+export const useStore = create(
+  persist(
+    (set) => ({
+      role: 'admin', // admin or viewer
+      darkMode: false,
+      transactions: [
+        { id: 1, date: '2024-03-01', amount: 2500, category: 'Salary', type: 'income', note: 'Monthly Pay' },
+        { id: 2, date: '2024-03-02', amount: 800, category: 'Rent', type: 'expense', note: 'Apartment' },
+        { id: 3, date: '2024-03-05', amount: 120, category: 'Food', type: 'expense', note: 'Groceries' },
+        { id: 4, date: '2024-03-10', amount: 50, category: 'Entertainment', type: 'expense', note: 'Movie' },
+      ],
+      setRole: (role) => set({ role }),
+      toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+      addTransaction: (tx) => set((state) => ({ transactions: [tx, ...state.transactions] })),
+      deleteTransaction: (id) => set((state) => ({
+        transactions: state.transactions.filter(t => t.id !== id)
+      })),
+    }),
+    { name: 'lumina-storage' } // This enables Local Storage persistence
+  )
+);
