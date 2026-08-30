@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useStore } from './store';
@@ -7,11 +7,22 @@ import App from './App.jsx';
 import Login from './pages/Login.jsx';
 
 function ProtectedRoute({ children }) {
-  const isLoggedIn = useStore((s) => s.isLoggedIn);
+  const { isLoggedIn, checkAuth } = useStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
   return isLoggedIn ? children : <Navigate to="/login" replace />;
 }
 
 function Root() {
+  const { checkAuth } = useStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
